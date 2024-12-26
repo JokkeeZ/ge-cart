@@ -19,6 +19,33 @@ export class ShoppingListItem
 	}
 };
 
+export function getAllLists() {
+	const lists = [];
+	const listNames = Object.entries(localStorage);
+
+	for (var name in listNames) {
+		const key = localStorage.key(name);
+		if (key.includes('_')) {
+			continue;
+		}
+
+		/** @type {ShoppingListItem[]} */
+		const items = JSON.parse(localStorage.getItem(key));
+		if (!items) {
+			continue;
+		}
+
+		let price = 0;
+
+		if (items.length > 0) {
+			price = getItemsTotalPrice(items);
+		}
+
+		lists.push({ name: key, price: price });
+	}
+
+	return lists;
+}
 /**
  * Creates a new shopping list and saves it to localStorage.
  *

@@ -1,26 +1,34 @@
 <script>
 	import { page } from '$app/stores';
 	import { base } from '$app/paths';
-	import { createShoppingList, shoppingListExists } from '$lib/ShoppingList';
+	import { createShoppingList, getAllLists, shoppingListExists } from '$lib/ShoppingList';
 
 	let listName = '';
+	let warningText = null;
 	let isValidListName = false;
 	let warningVisible = false;
 	let btnClass = 'is-success';
+	let lists = getAllLists();
 
 	$: listName, validateShoppingListName();
 
 	function validateShoppingListName() {
 		warningVisible = false;
 		isValidListName = false;
+		warningText = null;
 		btnClass = 'is-success';
 
-		if (listName.length != 0 && !shoppingListExists(listName)) {
-			isValidListName = true;
-		} else if (shoppingListExists(listName)) {
+		if (shoppingListExists(listName)) {
 			warningVisible = true;
 			btnClass = 'is-danger';
-		}
+			warningText = `Shopping list ${listName} already exists`;
+		} else if (listName.includes('_')) {
+			warningVisible = true;
+			btnClass = 'is-danger';
+			warningText = `Shopping list cannot contain underscores`;
+		} else if (listName.length != 0 && !shoppingListExists(listName)) {
+			isValidListName = true;
+		} 
 	}
 
 	function createList() {
@@ -33,7 +41,22 @@
 			window.location.href = `${base}/list?name=${listName}`;
 		}
 	}
+
+	function deleteList(name) {
+		localStorage.removeItem(name);
+		const index = lists.findIndex(i => i.name == name);
+
+		if (index != -1) {
+			lists.splice(index, 1);
+		}
+
+		lists = lists;
+	}
 </script>
+
+<svelte:head>
+	<title>GE Cart - Home</title>
+</svelte:head>
 
 <section class="section">
 	<div class="container">
@@ -46,14 +69,14 @@
 			</div>
 		</div>
 		<div class="columns is-centered is-vcentered is-mobile">
-			<div class="column is-four-fifths">
+			<div class="column is-three-fifths">
 				<div class="field is-horizontal">
 					<div class="field-body">
 						<div class="field">
 							<input
 								class="input"
 								type="text"
-								placeholder="Create a new shopping list"
+								placeholder="Give name for your shopping list"
 								name="id"
 								id="id"
 								bind:value={listName}
@@ -66,16 +89,69 @@
 									aria-label="Create shopping list"
 									class="button {btnClass} is-dark is-outlined"
 									onclick={createList}>
-									Create
+									<span class="icon-text">
+										<span class="icon">
+											<i class="fas fa-plus"></i>
+										</span>
+										<span>Create</span>
+									</span>
 								</button>
 							</p>
 						</div>
 					</div>
 				</div>
 				{#if warningVisible}
-				<p class="help is-danger">Shopping list "{listName}" already exists</p>
+				<p class="help is-danger">{warningText}</p>
 				{/if}
 			</div>
 		</div>
 	</div>
 </section>
+
+{#if lists.length > 0}
+<section class="section">
+	<div class="container">
+		<div class="columns is-centered is-vcentered is-mobile">
+			<div class="column is-three-fifths">
+				<table class="table is-striped is-fullwidth is-hoverable">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Value</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each Object.values(lists) as list}
+						<tr>
+							<td>{list.name}</td>
+							<td>{list.price.toLocaleString()}gp</td>
+							<td>
+								<a href="{base}/list?name={list.name}" class="button is-dark is-success is-outlined">
+									<span class="icon-text">
+										<span class="icon">
+											<i class="fas fa-eye"></i>
+										</span>
+										<span>View</span>
+									</span>
+								</a>
+								<button 
+									class="button is-danger is-success is-outlined"
+									onclick={() => deleteList(list.name)}>
+									<span class="icon-text">
+										<span class="icon">
+											<i class="fas fa-trash"></i>
+										</span>
+										<span>Delete</span>
+									</span>
+								</button>
+							</td>
+						</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</section>
+{/if}

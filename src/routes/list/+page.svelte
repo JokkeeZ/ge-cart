@@ -84,6 +84,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>GE Cart - {listName}</title>
+</svelte:head>
+
 {#if shoppingListExists(listName)}
 <section class="section">
 	<div class="container">
@@ -98,7 +102,7 @@
 		<div class="columns is-centered is-vcentered is-mobile">
 			<div class="column is-full">
 				<div class="box search-box">
-					<h1>Add item to the list</h1>
+					<h1>Search items from Grand Exchange</h1>
 					<AutoComplete
 					searchFunction="{getMappingData}"
 					delay="300"
@@ -107,7 +111,6 @@
 					valueFieldName="id"
 					maxItemsToShowInList={25}
 					bind:selectedItem="{selectedItem}">
-
 						<div slot="item" let:item let:label>
 							<figure>
 								<img src={getItemImageUrl(item.icon)} alt={item.examine} />
@@ -147,13 +150,25 @@
 						<td>
 							<div class="field has-addons">
 								<div class="control">
-									<button class="button" on:click={() => decreaseItemCount(item)}>-</button>
+									<button class="button" 
+										on:click={() => decreaseItemCount(item)}
+										aria-label="Remove item">
+										<span class="icon">
+											<i class="fas fa-minus"></i>
+										</span>
+									</button>
 								</div>
 								<div class="control has-text-centered">
-									<input class="input count-input has-text-centered" type="number" bind:value={item.count} on:change={() => updateItems(listName, items)} placeholder={item.count}/>
-								  </div>
-								  <div class="control">
-									<button class="button" on:click={() => increaseItemCount(item)}>+</button>
+									<input class="input has-text-centered" type="number" bind:value={item.count} on:change={() => updateItems(listName, items)} placeholder={item.count}/>
+								</div>
+								<div class="control">
+									<button class="button" 
+										on:click={() => increaseItemCount(item)}
+										aria-label="Add item">
+										<span class="icon">
+											<i class="fas fa-plus"></i>
+										</span>
+									</button>
 								</div>
 							</div>
 						</td>
@@ -196,6 +211,5 @@
 	/* Firefox */
 	input[type=number] {
 		appearance: textfield;
-		-moz-appearance: textfield;
 	}
 </style>

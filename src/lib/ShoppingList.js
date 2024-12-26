@@ -56,62 +56,26 @@ export function getAllListItems(name) {
 };
 
 /**
- * Adds a new item to the specified shopping list or updates an existing item.
- *
- * @param {string} name The name of the shopping list where the item should be added or updated.
- * @param {ShoppingListItem} item The item to add or update.
- * @returns {boolean} `true` if the item was successfully added or updated, otherwise `false`.
+ * @param {ShoppingListItem[]} items 
+ * @param {ShoppingListItem} item 
  */
-export function addOrUpdateItem(name, item) {
-	const list = localStorage.getItem(name);
-
-	if (!list) {
-		console.log('[addOrUpdateItem] failed - list is null.');
-		return false;
-	}
-
-	/** @type {ShoppingListItem[]} */
-	const items = JSON.parse(list);
+export function addItem(name, items, item) {
 	const index = items.findIndex(i => i.id == item.id);
 
 	if (index == -1) {
 		items.push(item);
-	} else {
-		items[index].count++;
 	}
 
-	localStorage.setItem(name, JSON.stringify(items));
-	return true;
+	updateItems(name, items);
 };
 
 /**
- * Updates the item count if more than one image exists; otherwise, removes the item from the shopping list.
- *
- * @param {string} name The name of the shopping list.
- * @param {ShoppingListItem} item The item to update or remove.
- * @returns {boolean} `true` if the operation was successful (item updated or removed), otherwise `false`.
+ * @param {String} name 
+ * @param {ShoppingListItem[]} items 
  */
-export function removeOrUpdateItem(name, item) {
-	const list = localStorage.getItem(name);
-
-	if (!list) {
-		console.log('[removeOrUpdateItem] failed - list is null.');
+export function updateItems(name, items) {
+	if (!shoppingListExists(name)) {
 		return false;
-	}
-
-	/** @type {ShoppingListItem[]} */
-	const items = JSON.parse(list);
-	const index = items.findIndex(i => i.id == item.id);
-
-	if (index == -1) {
-		console.log('[removeOrUpdateItem] failed - couldnt find index for item.');
-		return false;
-	}
-
-	items[index].count--;
-
-	if (items[index].count < 1) {
-		items.splice(index, 1);
 	}
 
 	localStorage.setItem(name, JSON.stringify(items));
@@ -143,20 +107,10 @@ export function getItemImageUrl(img) {
 };
 
 /**
- * Calculates the total price of all items in the specified shopping list.
- * If the calculation fails, returns 0.
- *
- * @param {string} name The name of the shopping list to calculate the total price for.
+ * @param {ShoppingListItem[]} items Array of items
  * @returns {number} The total price of the shopping list, or `0` if the calculation fails.
  */
-export function getListTotalPrice(name) {
-	const allItems = getAllListItems(name);
-
-	if (!allItems) {
-		console.log('[getListTotalPrice] failed - list is null.');
-		return 0;
-	}
-
-	const sum = allItems.reduce((n, {price, count}) => n + (price * count), 0);
+export function getItemsTotalPrice(items) {
+	const sum = items.reduce((n, {price, count}) => n + (price * count), 0);
 	return sum ? sum : 0;
 };

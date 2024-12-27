@@ -1,4 +1,4 @@
-## ge-cart
- Grand Exchange shopping cart app built with SvelteKit
+# ge-cart
+ Grand Exchange shopping cart list built with SvelteKit
  
  https://jokkeez.github.io/ge-cart/

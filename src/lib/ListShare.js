@@ -1,6 +1,8 @@
+import { base } from '$app/paths';
+
 export function generateLink(name, items) {
 	const b64 = btoa(JSON.stringify(items));
-	return `${window.location.origin}/list?name=${name}&shared=${b64}`;
+	return `${window.location.origin}${base}/list?name=${name}&shared=${b64}`;
 };
 
 export function parseLink(shared) {

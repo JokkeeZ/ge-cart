@@ -90,7 +90,7 @@
 									<button 
 										name="create"
 										aria-label="Create shopping list"
-										class="button {btnClass} is-dark is-outlined"
+										class="button {btnClass} is-outlined"
 										onclick={createList}>
 										<span class="icon-text">
 											<span class="icon">
@@ -127,7 +127,7 @@
 								</div>
 								<div class="cell">{list.price.toLocaleString()}gp</div>
 								<div class="cell">
-									<a href="{base}/list?name={list.name}" class="button is-dark is-success is-outlined">
+									<a href="{base}/list?name={list.name}" class="button is-success is-outlined">
 										<span class="icon-text">
 											<span class="icon">
 												<i class="fas fa-eye"></i>

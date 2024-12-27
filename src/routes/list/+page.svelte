@@ -4,6 +4,7 @@
 	import { page } from "$app/stores";
 	import { base } from '$app/paths';
 	import { getMappingData, getPricesData } from "$lib/DataHandler";
+	import { generateLink, parseLink } from "$lib/ListShare";
 	import { 
 		ShoppingListItem,
 		getItemImageUrl,
@@ -11,13 +12,26 @@
 		getAllListItems,
 		getItemsTotalPrice,
 		updateItems,
-		addItem
+		addItem,
+		createShoppingList,
 	} from "$lib/ShoppingList";
 
-	let selectedItem, priceText;
+	let selectedItem, priceText, linkCreated, linkText;
 	const listName = $page.url.searchParams.get('name');
+	const wasShared = $page.url.searchParams.get('shared');
+
 	let items = getAllListItems(listName);
 	
+	if (wasShared) {
+		const result = parseLink(wasShared);
+		if (!result) {
+			items = [];
+		} else {
+			items = result;
+			createShoppingList(listName);
+		}
+	}
+
 	$: items, onItemsChange();
 	$: selectedItem, onSelectedItemChange();
 
@@ -82,6 +96,12 @@
 	function homePage() {
 		window.location.href = `${base}/`;
 	}
+
+	function makeLink() {
+		const link = generateLink(listName, items);
+		linkCreated = true;
+		linkText = link;
+	}
 </script>
 
 <svelte:head>
@@ -102,27 +122,50 @@
 		<div class="columns is-mobile is-centered is-vcentered">
 			<div class="column is-full">
 				<div class="box">
-					<AutoComplete
-						searchFunction="{getMappingData}"
-						delay="300"
-						className="is-success hide-arrow"
-						hideArrow={true}
-						localFiltering={true}
-						labelFieldName="name"
-						valueFieldName="id"
-						placeholder="Search items from Grand Exchange"
-						maxItemsToShowInList={25}
-						bind:selectedItem="{selectedItem}">
-						<div slot="item" let:item let:label>
-							<figure>
-								<img src={getItemImageUrl(item.icon)} alt={item.examine} />
-								{@html label}
-							</figure>
+					<div class="fixed-grid has-1-cols">
+						<div class="grid">
+							<div class="cell search-box">
+								<AutoComplete
+									searchFunction="{getMappingData}"
+									delay="300"
+									className="is-success hide-arrow"
+									hideArrow={true}
+									localFiltering={true}
+									labelFieldName="name"
+									valueFieldName="id"
+									placeholder="Search items from Grand Exchange"
+									maxItemsToShowInList={25}
+									bind:selectedItem="{selectedItem}">
+									<div slot="item" let:item let:label>
+										<figure>
+											<img src={getItemImageUrl(item.icon)} alt={item.examine} />
+											{@html label}
+										</figure>
+									</div>
+								</AutoComplete>
+							</div>
+							<div class="cell">
+								<button class="button is-pulled-right" onclick={() => makeLink()}>
+									<span class="icon-text">
+										<span class="icon">
+											<i class="fas fa-share"></i>
+										</span>
+										<span>Share list</span>
+									</span>
+								</button>
+							</div>
 						</div>
-					</AutoComplete>
+					</div>
 				</div>
 			</div>
 		</div>
+		{#if linkCreated}
+		<input 
+			class="input is-small has-text-centered is-clipped" 
+			type="text"
+			onfocus={event => event.target.select()}
+			bind:value={linkText} readonly/>
+		{/if}
 	</div>
 </section>
 
@@ -147,7 +190,7 @@
 									<div class="field has-addons">
 										<div class="control">
 											<button class="button is-small"
-												on:click={() => decreaseItemCount(item)}
+												onclick={() => decreaseItemCount(item)}
 												aria-label="Remove item">
 												<span class="icon">
 													<i class="fas fa-minus"></i>
@@ -159,12 +202,12 @@
 												class="input is-small has-text-centered"
 												type="number"
 												bind:value={item.count}
-												on:change={() => updateItems(listName, items)}
+												onchange={() => updateItems(listName, items)}
 												placeholder={item.count}/>
 										</div>
 										<div class="control">
 											<button class="button is-small"
-												on:click={() => increaseItemCount(item)}
+												onclick={() => increaseItemCount(item)}
 												aria-label="Add item">
 												<span class="icon">
 													<i class="fas fa-plus"></i>
@@ -188,74 +231,12 @@
 <section class="section">
 	<div class="container">
 		<div class="notification is-danger">
-			<button class="delete" aria-label="close-page" on:click={homePage}></button>
+			<button class="delete" aria-label="close-page" onclick={homePage}></button>
 			Shopping list <strong>{listName}</strong> could not be found.
 		</div>
 	</div>
 </section>
 {/if}
-
-<!-- {#if items.length > 0}
-<div class="columns is-mobile is-centered is-vcentered">
-	{#each Object.values(items) as item}
-	<div class="column is-full has-text-centered">
-		<div class="box">
-			<div class="grid">
-				<div class="cell">
-					<figure>
-						<img src={getItemImageUrl(item.icon)} alt={item.examine} />
-					</figure>
-				</div>
-				<div class="cell" title={item.examine}>{item.name}</div>
-				<div class="cell" title="{item.price.toLocaleString()} per item">{(item.price * item.count).toLocaleString()}gp</div>
-				<div class="cell">
-					<div class="field has-addons">
-						<div class="control">
-							<button class="button is-small"
-								on:click={() => decreaseItemCount(item)}
-								aria-label="Remove item">
-								<span class="icon">
-									<i class="fas fa-minus"></i>
-								</span>
-							</button>
-						</div>
-						<div class="control has-text-centered">
-							<input 
-								class="input is-small has-text-centered"
-								type="number"
-								bind:value={item.count}
-								on:change={() => updateItems(listName, items)}
-								placeholder={item.count}/>
-						</div>
-						<div class="control">
-							<button class="button is-small"
-								on:click={() => increaseItemCount(item)}
-								aria-label="Add item">
-								<span class="icon">
-									<i class="fas fa-plus"></i>
-								</span>
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	{/each}
-</div>
-{/if} -->
-
-
-<!-- {:else}
-<section class="section">
-	<div class="container">
-		<div class="notification is-danger">
-			<button class="delete" aria-label="close-page" on:click={homePage}></button>
-			Shopping list <strong>{listName}</strong> could not be found.
-		</div>
-	</div>
-</section>
-{/if} -->
 
 <style>
 	.search-box :global(.autocomplete-list) {

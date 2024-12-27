@@ -91,26 +91,28 @@
 {#if shoppingListExists(listName)}
 <section class="section">
 	<div class="container">
-		<div class="columns is-centered is-vcentered is-mobile">
-			<div class="column is-full has-text-centered">
+		<div class="columns is-mobile is-centered is-vcentered">
+			<div class="column has-text-centered">
 				<a href="{base}/" class="title">GE CART</a>
 				<p class="subtitle">
 					Shopping cart {priceText}
 				</p>
 			</div>
 		</div>
-		<div class="columns is-centered is-vcentered is-mobile">
+		<div class="columns is-mobile is-centered is-vcentered">
 			<div class="column is-full">
-				<div class="box search-box">
-					<h1>Search items from Grand Exchange</h1>
+				<div class="box">
 					<AutoComplete
-					searchFunction="{getMappingData}"
-					delay="300"
-					localFiltering={true}
-					labelFieldName="name"
-					valueFieldName="id"
-					maxItemsToShowInList={25}
-					bind:selectedItem="{selectedItem}">
+						searchFunction="{getMappingData}"
+						delay="300"
+						className="is-success hide-arrow"
+						hideArrow={true}
+						localFiltering={true}
+						labelFieldName="name"
+						valueFieldName="id"
+						placeholder="Search items from Grand Exchange"
+						maxItemsToShowInList={25}
+						bind:selectedItem="{selectedItem}">
 						<div slot="item" let:item let:label>
 							<figure>
 								<img src={getItemImageUrl(item.icon)} alt={item.examine} />
@@ -127,59 +129,61 @@
 {#if items.length > 0}
 <section class="section">
 	<div class="container">
-		<div class="box">
-			<table class="table is-striped is-fullwidth is-hoverable">
-				<thead>
-					<tr>
-						<th>Icon</th>
-						<th>Name</th>
-						<th>Price</th>
-						<th>Count</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each Object.values(items) as item}
-					<tr>
-						<td>
-							<figure>
-								<img src={getItemImageUrl(item.icon)} alt={item.examine} />
-							</figure>
-						</td>
-						<td title={item.examine}>{item.name}</td>
-						<td>{(item.price * item.count).toLocaleString()}gp</td>
-						<td>
-							<div class="field has-addons">
-								<div class="control">
-									<button class="button" 
-										on:click={() => decreaseItemCount(item)}
-										aria-label="Remove item">
-										<span class="icon">
-											<i class="fas fa-minus"></i>
-										</span>
-									</button>
+		<div class="fixed-grid has-1-cols">
+			<div class="grid">
+				{#each Object.values(items) as item}
+				<div class="cell has-text-centered">
+					<div class="box">
+						<div class="fixed-grid has-4-cols has-3-cols-mobile">
+							<div class="grid">
+								<div class="cell">
+									<figure>
+										<img src={getItemImageUrl(item.icon)} alt={item.examine} />
+									</figure>
 								</div>
-								<div class="control has-text-centered">
-									<input class="input has-text-centered" type="number" bind:value={item.count} on:change={() => updateItems(listName, items)} placeholder={item.count}/>
-								</div>
-								<div class="control">
-									<button class="button" 
-										on:click={() => increaseItemCount(item)}
-										aria-label="Add item">
-										<span class="icon">
-											<i class="fas fa-plus"></i>
-										</span>
-									</button>
+								<div class="cell is-hidden-mobile" title={item.examine}>{item.name}</div>
+								<div class="cell" title="{item.price.toLocaleString()} per item">{(item.price * item.count).toLocaleString()}gp</div>
+								<div class="cell">
+									<div class="field has-addons">
+										<div class="control">
+											<button class="button is-small"
+												on:click={() => decreaseItemCount(item)}
+												aria-label="Remove item">
+												<span class="icon">
+													<i class="fas fa-minus"></i>
+												</span>
+											</button>
+										</div>
+										<div class="control">
+											<input 
+												class="input is-small has-text-centered"
+												type="number"
+												bind:value={item.count}
+												on:change={() => updateItems(listName, items)}
+												placeholder={item.count}/>
+										</div>
+										<div class="control">
+											<button class="button is-small"
+												on:click={() => increaseItemCount(item)}
+												aria-label="Add item">
+												<span class="icon">
+													<i class="fas fa-plus"></i>
+												</span>
+											</button>
+										</div>
+									</div>
 								</div>
 							</div>
-						</td>
-					</tr>
-					{/each}
-				</tbody>
-			</table>
+						</div>
+					</div>
+				</div>
+				{/each}
+			</div>
 		</div>
 	</div>
 </section>
 {/if}
+
 {:else}
 <section class="section">
 	<div class="container">
@@ -190,6 +194,68 @@
 	</div>
 </section>
 {/if}
+
+<!-- {#if items.length > 0}
+<div class="columns is-mobile is-centered is-vcentered">
+	{#each Object.values(items) as item}
+	<div class="column is-full has-text-centered">
+		<div class="box">
+			<div class="grid">
+				<div class="cell">
+					<figure>
+						<img src={getItemImageUrl(item.icon)} alt={item.examine} />
+					</figure>
+				</div>
+				<div class="cell" title={item.examine}>{item.name}</div>
+				<div class="cell" title="{item.price.toLocaleString()} per item">{(item.price * item.count).toLocaleString()}gp</div>
+				<div class="cell">
+					<div class="field has-addons">
+						<div class="control">
+							<button class="button is-small"
+								on:click={() => decreaseItemCount(item)}
+								aria-label="Remove item">
+								<span class="icon">
+									<i class="fas fa-minus"></i>
+								</span>
+							</button>
+						</div>
+						<div class="control has-text-centered">
+							<input 
+								class="input is-small has-text-centered"
+								type="number"
+								bind:value={item.count}
+								on:change={() => updateItems(listName, items)}
+								placeholder={item.count}/>
+						</div>
+						<div class="control">
+							<button class="button is-small"
+								on:click={() => increaseItemCount(item)}
+								aria-label="Add item">
+								<span class="icon">
+									<i class="fas fa-plus"></i>
+								</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{/each}
+</div>
+{/if} -->
+
+
+<!-- {:else}
+<section class="section">
+	<div class="container">
+		<div class="notification is-danger">
+			<button class="delete" aria-label="close-page" on:click={homePage}></button>
+			Shopping list <strong>{listName}</strong> could not be found.
+		</div>
+	</div>
+</section>
+{/if} -->
 
 <style>
 	.search-box :global(.autocomplete-list) {

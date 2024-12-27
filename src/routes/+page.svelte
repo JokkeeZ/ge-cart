@@ -60,49 +60,53 @@
 
 <section class="section">
 	<div class="container">
-		<div class="columns is-centered is-vcentered is-mobile">
-			<div class="column is-full has-text-centered">
+
+		<div class="columns is-mobile is-centered is-vcentered">
+			<div class="column has-text-centered">
 				<a href="{base}/" class="title">GE CART</a>
 				<p class="subtitle">
 					Create <strong>Grand Exchange</strong> shopping lists!
 				</p>
 			</div>
 		</div>
-		<div class="columns is-centered is-vcentered is-mobile">
-			<div class="column is-three-fifths">
-				<div class="field is-horizontal">
-					<div class="field-body">
-						<div class="field">
-							<input
-								class="input"
-								type="text"
-								placeholder="Give name for your shopping list"
-								name="id"
-								id="id"
-								bind:value={listName}
-							/>
-						</div>
-						<div class="field is-narrow">
-							<p class="control">
-								<button 
-									name="create"
-									aria-label="Create shopping list"
-									class="button {btnClass} is-dark is-outlined"
-									onclick={createList}>
-									<span class="icon-text">
-										<span class="icon">
-											<i class="fas fa-plus"></i>
+
+		<div class="columns is-mobile">
+			<div class="column is-full has-text-centered">
+				<div class="box">
+					<div class="field is-horizontal">
+						<div class="field-body">
+							<div class="field">
+								<input
+									class="input"
+									type="text"
+									placeholder="Give name for your shopping list"
+									name="id"
+									id="id"
+									bind:value={listName}
+								/>
+							</div>
+							<div class="field is-narrow">
+								<p class="control">
+									<button 
+										name="create"
+										aria-label="Create shopping list"
+										class="button {btnClass} is-dark is-outlined"
+										onclick={createList}>
+										<span class="icon-text">
+											<span class="icon">
+												<i class="fas fa-plus"></i>
+											</span>
+											<span>Create</span>
 										</span>
-										<span>Create</span>
-									</span>
-								</button>
-							</p>
+									</button>
+								</p>
+							</div>
 						</div>
 					</div>
+					{#if warningVisible}
+					<p class="help is-danger">{warningText}</p>
+					{/if}
 				</div>
-				{#if warningVisible}
-				<p class="help is-danger">{warningText}</p>
-				{/if}
 			</div>
 		</div>
 	</div>
@@ -111,45 +115,42 @@
 {#if lists.length > 0}
 <section class="section">
 	<div class="container">
-		<div class="columns is-centered is-vcentered is-mobile">
-			<div class="column is-three-fifths">
-				<table class="table is-striped is-fullwidth is-hoverable">
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Value</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each Object.values(lists) as list}
-						<tr>
-							<td>{list.name}</td>
-							<td>{list.price.toLocaleString()}gp</td>
-							<td>
-								<a href="{base}/list?name={list.name}" class="button is-dark is-success is-outlined">
-									<span class="icon-text">
-										<span class="icon">
-											<i class="fas fa-eye"></i>
+		<div class="fixed-grid has-1-cols">
+			<div class="grid">
+				{#each Object.values(lists) as list}
+				<div class="cell has-text-centered">
+					<div class="box">
+						<div class="fixed-grid has-3-cols has-1-cols-mobile">
+							<div class="grid">
+								<div class="cell" title={list.name}>
+									<strong>{list.name}</strong>
+								</div>
+								<div class="cell">{list.price.toLocaleString()}gp</div>
+								<div class="cell">
+									<a href="{base}/list?name={list.name}" class="button is-dark is-success is-outlined">
+										<span class="icon-text">
+											<span class="icon">
+												<i class="fas fa-eye"></i>
+											</span>
+											<span>View</span>
 										</span>
-										<span>View</span>
-									</span>
-								</a>
-								<button 
-									class="button is-danger is-success is-outlined"
-									onclick={() => deleteList(list.name)}>
-									<span class="icon-text">
-										<span class="icon">
-											<i class="fas fa-trash"></i>
+									</a>
+									<button 
+										class="button is-danger is-success is-outlined"
+										onclick={() => deleteList(list.name)}>
+										<span class="icon-text">
+											<span class="icon">
+												<i class="fas fa-trash"></i>
+											</span>
+											<span>Delete</span>
 										</span>
-										<span>Delete</span>
-									</span>
-								</button>
-							</td>
-						</tr>
-						{/each}
-					</tbody>
-				</table>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{/each}
 			</div>
 		</div>
 	</div>

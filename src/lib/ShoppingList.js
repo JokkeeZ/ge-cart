@@ -19,6 +19,9 @@ export class ShoppingListItem
 	}
 };
 
+/**
+ * @returns {{name: string, price: number}[]}
+ */
 export function getAllLists() {
 	const lists = [];
 	const listNames = Object.entries(localStorage);
@@ -46,12 +49,10 @@ export function getAllLists() {
 
 	return lists;
 }
+
 /**
- * Creates a new shopping list and saves it to localStorage.
- *
- * @param {string} name The name of the shopping list to create.
- * @returns {boolean} `true` if the shopping list was successfully created (did not already exist), 
- * otherwise `false`.
+ * @param {string} name
+ * @returns {boolean}
  */
 export function createShoppingList(name) {
 	if (shoppingListExists(name)) {
@@ -65,10 +66,8 @@ export function createShoppingList(name) {
 };
 
 /**
- * Retrieves all items from a specified shopping list by its name.
- * 
- * @param {String} name The name of the shopping list to retrieve items from.
- * @returns {ShoppingListItem[]} An array of items from the specified shopping list.
+ * @param {String} name
+ * @returns {ShoppingListItem[]}
  */
 export function getAllListItems(name) {
 	const list = localStorage.getItem(name);
@@ -83,10 +82,11 @@ export function getAllListItems(name) {
 };
 
 /**
+ * @param {String} name 
  * @param {ShoppingListItem[]} items 
- * @param {ShoppingListItem} item 
+ * @param {ShoppingListItem[} item 
  */
-export function addItem(name, items, item) {
+export function addItemToList(name, items, item) {
 	const index = items.findIndex(i => i.id == item.id);
 
 	if (index == -1) {
@@ -110,20 +110,16 @@ export function updateItems(name, items) {
 };
 
 /**
- * Checks if a shopping list with the given name exists.
- *
- * @param {string} name The name of the shopping list to check.
- * @returns {boolean} `true` if a shopping list with the given name exists, otherwise `false`.
+ * @param {string} name
+ * @returns {boolean}
  */
 export function shoppingListExists(name) {
 	return localStorage.getItem(name) != null;
 };
 
 /**
- * Converts an image name to an osrs wiki image URL.
- *
- * @param {string} img The name of the image to convert.
- * @returns {string} The generated URL for the image on the osrs wiki.
+ * @param {string} img
+ * @returns {string}
  */
 export function getItemImageUrl(img) {
 	img = encodeURIComponent(img.replaceAll(' ', '_')).replace(/[!'()*]/g, function(c) {
@@ -134,10 +130,14 @@ export function getItemImageUrl(img) {
 };
 
 /**
- * @param {ShoppingListItem[]} items Array of items
- * @returns {number} The total price of the shopping list, or `0` if the calculation fails.
+ * @param {ShoppingListItem[]} items
+ * @returns {number}
  */
 export function getItemsTotalPrice(items) {
+	if (!Array.isArray(items)) {
+		return 0;
+	}
+
 	const sum = items.reduce((n, {price, count}) => n + (price * count), 0);
 	return sum ? sum : 0;
 };

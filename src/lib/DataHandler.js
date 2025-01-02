@@ -15,30 +15,23 @@ const headers = new Headers({
 });
 
 /**
- * Fetches the latest item mappings from the osrs wiki API.
- *
- * @returns {Promise<Object>} A promise that resolves to the latest item mappings.
+ * @returns {Promise<Object>}
  */
 export async function getMappingData() {
 	return await getData('mapping_data', 'https://prices.runescape.wiki/api/v1/osrs/mapping');
 };
 
 /**
- * Fetches the latest item prices from the osrs wiki API.
- *
- * @returns {Promise<Object>} A promise that resolves to the latest item prices.
+ * @returns {Promise<Object>}
  */
 export async function getPricesData() {
 	return await getData('prices_data', 'https://prices.runescape.wiki/api/v1/osrs/latest');
 };
 
 /**
- * Fetches the latest data from the specified URL and caches it in localStorage as JSON using the given key.
- * If the cached data is older than 10 minutes, it will be fetched again; otherwise, data is retrieved from the cache.
- *
- * @param {string} key The name of the cache key where the request response will be stored in JSON format.
- * @param {string} url The URL from which to fetch the data.
- * @returns The retrieved or fetched shopping list item mappings or prices.
+ * @param {string} key
+ * @param {string} url
+ * @returns
  */
 async function getData(key, url) {
 	const currentTime = Date.now();

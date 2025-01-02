@@ -12,34 +12,34 @@
 		getAllListItems,
 		getItemsTotalPrice,
 		updateItems,
-		addItem,
+		addItemToList,
 		createShoppingList,
 	} from "$lib/ShoppingList";
 
 	let selectedItem, priceText, linkCreated, linkText;
 	const listName = $page.url.searchParams.get('name');
 	const wasShared = $page.url.searchParams.get('shared');
-
+	
+	let listExists = shoppingListExists(listName);
 	let items = getAllListItems(listName);
 	
-	if (wasShared) {
-		const result = parseLink(wasShared);
-		if (!result) {
-			items = [];
-		} else {
-			items = result;
-			createShoppingList(listName);
-		}
-	}
-
 	$: items, onItemsChange();
 	$: selectedItem, onSelectedItemChange();
+
+	if (wasShared) {
+		parseLink(wasShared).then(result => {
+			if (createShoppingList(listName) && result) {
+				items = result;
+				listExists = shoppingListExists(listName);
+				updateItems(listName, result);
+			}
+		});
+	}
 
 	function onItemsChange() {
 		updateItems(listName, items);
 
 		const total = getItemsTotalPrice(items);
-
 		if (total < 1) {
 			priceText = 'is empty';
 		} else {
@@ -108,7 +108,7 @@
 	<title>GE Cart - {listName}</title>
 </svelte:head>
 
-{#if shoppingListExists(listName)}
+{#if listExists}
 <section class="section">
 	<div class="container">
 		<div class="columns is-mobile is-centered is-vcentered">

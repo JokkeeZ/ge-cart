@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { base } from '$app/paths';
 	import { createShoppingList, getAllLists, shoppingListExists } from '$lib/ShoppingList';
+	import Header from '$lib/Header.svelte';
 
 	let listName = '';
 	let warningText = null;
@@ -60,15 +61,7 @@
 
 <section class="section">
 	<div class="container">
-
-		<div class="columns is-mobile is-centered is-vcentered">
-			<div class="column has-text-centered">
-				<a href="{base}/" class="title">GE CART</a>
-				<p class="subtitle">
-					Create <strong>Grand Exchange</strong> shopping lists!
-				</p>
-			</div>
-		</div>
+		<Header subtitleText="Create <strong>Grand Exchange</strong> Shopping Lists!"/>
 
 		<div class="columns is-mobile">
 			<div class="column is-full has-text-centered">

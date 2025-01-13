@@ -15,6 +15,7 @@
 		addItemToList,
 		createShoppingList,
 	} from "$lib/ShoppingList";
+	import Header from "$lib/Header.svelte";
 
 	let selectedItem, priceText, linkCreated, linkText;
 	const listName = $page.url.searchParams.get('name');
@@ -111,14 +112,8 @@
 {#if listExists}
 <section class="section">
 	<div class="container">
-		<div class="columns is-mobile is-centered is-vcentered">
-			<div class="column has-text-centered">
-				<a href="{base}/" class="title">GE CART</a>
-				<p class="subtitle">
-					Shopping cart {priceText}
-				</p>
-			</div>
-		</div>
+		<Header subtitleText={"Shopping cart " + priceText}/>
+		
 		<div class="columns is-mobile is-centered is-vcentered">
 			<div class="column is-full">
 				<div class="box">

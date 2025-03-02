@@ -16,6 +16,7 @@
 		createShoppingList,
 	} from "$lib/ShoppingList";
 	import Header from "$lib/Header.svelte";
+	import LocalStorageNotice from '$lib/LocalStorageNotice.svelte';
 
 	let selectedItem, priceText, linkCreated, linkText;
 	const listName = $page.url.searchParams.get('name');
@@ -255,3 +256,5 @@
 		appearance: textfield;
 	}
 </style>
+
+<LocalStorageNotice />

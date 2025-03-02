@@ -55,7 +55,7 @@ export function getAllLists() {
  * @returns {boolean}
  */
 export function createShoppingList(name) {
-	if (shoppingListExists(name)) {
+	if (shoppingListExists(name) || localStorage.getItem('accepted_usage')) {
 		return false;
 	}
 
@@ -101,7 +101,7 @@ export function addItemToList(name, items, item) {
  * @param {ShoppingListItem[]} items 
  */
 export function updateItems(name, items) {
-	if (!shoppingListExists(name)) {
+	if (!shoppingListExists(name) || localStorage.getItem('accepted_usage')) {
 		return false;
 	}
 

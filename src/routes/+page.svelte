@@ -3,6 +3,7 @@
 	import { base } from '$app/paths';
 	import { createShoppingList, getAllLists, shoppingListExists } from '$lib/ShoppingList';
 	import Header from '$lib/Header.svelte';
+	import LocalStorageNotice from '$lib/LocalStorageNotice.svelte';
 
 	let listName = '';
 	let warningText = null;
@@ -33,6 +34,10 @@
 	}
 
 	function createList() {
+		if (!localStorage.getItem('accepted_usage')) {
+			return;
+		}
+
 		if (!isValidListName) {
 			btnClass = 'is-danger';
 			return;
@@ -149,3 +154,5 @@
 	</div>
 </section>
 {/if}
+
+<LocalStorageNotice />

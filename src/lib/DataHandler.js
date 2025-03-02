@@ -54,8 +54,10 @@ async function getData(key, url) {
 	})
 	.then(result => result.json())
 	.then(result => {
-		localStorage.setItem(key, JSON.stringify(result));
-		localStorage.setItem(key + '_expiry', currentTime);
+		if (localStorage.getItem('accepted_usage')) {
+			localStorage.setItem(key, JSON.stringify(result));
+			localStorage.setItem(key + '_expiry', currentTime);
+		}
 	});
 
 	return JSON.parse(localStorage.getItem(key));
